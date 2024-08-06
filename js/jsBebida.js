@@ -3,7 +3,7 @@
 // Arreglo que se llenará de objetos JSON
 let obj = [];
 
-fetch("http://localhost:8080/ElZarape/json/jsonBebida.json")
+fetch('./json/jsonBebida.json')
         .then(response => response.json())
         .then(jasondata => {
             obj = jasondata;

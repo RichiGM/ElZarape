@@ -15,7 +15,7 @@ let obj = []; // Arreglo que se llenará de objetos JSON
 let indexComboSeleccionado;
 
 // Cargar datos y actualizar la tabla
-fetch("http://localhost:8080/ElZarape/json/jsonCombo.json")
+fetch('./json/jsonCombo.json')
         .then(response => response.json())
         .then(jasondata => {
             obj = jasondata;

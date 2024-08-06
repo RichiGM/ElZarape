@@ -1,7 +1,7 @@
 /* global fetch */
 // Arreglo que se llenará de objetos JSON
 let obj = [];
-fetch("http://localhost:8080/ElZarape/json/jsonCombo.json")
+fetch('./json/jsonCombo.json')
         .then(response => response.json())
         .then(jasondata => {
             obj = jasondata;

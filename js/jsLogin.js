@@ -5,9 +5,9 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
 
-    fetch('http://localhost:8080/ElZarape/json/jsonUsuario.json')
-        .then(response => response.json())
-        .then(data => {
+    fetch('./json/jsonUsuario.json')
+    .then(response => response.json())
+    .then(data => {
             // Busca el usuario en la respuesta del JSON
             const user = data.find(user => user.username === username && user.password === password);
 
