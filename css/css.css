@@ -241,7 +241,6 @@ h2 {
 /* Estilo para el contenedor del mapa */
 .container-map {
     display: flex;
-    background-image: url('ruta-a-tu-imagen-de-fondo.jpg');
     background-size: cover;
     padding: 20px;
     border-radius: 8px;

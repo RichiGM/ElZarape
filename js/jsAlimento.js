@@ -25,7 +25,7 @@ function actualizaTabla() {
         cuerpo += registro;
     });
     document.getElementById("tblAlimentos").innerHTML = cuerpo;
-    filtrarAlimentos(); // Aplicar el filtro al cargar la tabla
+    filtrarTabla(); // Aplicar el filtro al cargar la tabla
 }
 
 function normalizarTexto(texto) {
