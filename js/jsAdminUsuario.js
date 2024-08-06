@@ -15,7 +15,7 @@ let obj = []; // Arreglo que se llenará de objetos JSON
 let indexUsuarioSeleccionado;
 
 // Cargar datos y actualizar la tabla
-fetch('./json/jsonUsuario.json')
+fetch('../json/jsonUsuario.json')
     .then(response => response.json())
     .then(jasondata => {
         obj = jasondata;
