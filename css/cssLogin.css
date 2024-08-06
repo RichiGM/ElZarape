@@ -1,0 +1,71 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-image: url('../img/zarapeFondo.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.login-container {
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    max-width: 300px;
+    width: 100%;
+}
+
+.login-logo {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.login-logo img {
+    max-width: 100px;
+}
+
+h2 {
+    text-align: center;
+    color: #FA4032;
+    margin-top: 0;
+}
+
+label {
+    color: #333;
+}
+
+input[type="text"],
+input[type="password"] {
+    width: calc(100% - 20px);
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    background-color: #FA812F;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #FAAF08;
+}
+
+.login-form {
+    background-color: #FEF3E2;
+    padding: 20px;
+    border-radius: 10px;
+}
