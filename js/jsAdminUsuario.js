@@ -49,7 +49,7 @@ function selectUsuario(index) {
 
     // Mostrar botones relevantes
     btnModificar.style.display = "inline-block";
-    btnEliminar.style.display = "inline-block";
+    btnEliminar.style.display = "none";
     btnCambiarEstatus.style.display = "inline-block";
     btnLimpiar.style.display = "inline-block";
     btnAgregar.style.display = "none";
