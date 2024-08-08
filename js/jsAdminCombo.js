@@ -21,20 +21,39 @@ fetch('../json/jsonAlimento.json')
     .then(alimentos => {
         let alimentosCheckboxes = document.getElementById("alimentosCheckboxes");
         alimentos.forEach(alimento => {
-            let div = document.createElement("div");
-            div.className = "form-check";
+            let row = document.createElement("tr");
+            let checkboxCell = document.createElement("td");
+            let cantidadCell = document.createElement("td");
+            
             let checkbox = document.createElement("input");
             checkbox.className = "form-check-input";
             checkbox.type = "checkbox";
             checkbox.value = alimento.nombre;
             checkbox.id = `alimento-${alimento.nombre}`;
+            checkbox.dataset.nombre = alimento.nombre;
+
             let label = document.createElement("label");
             label.className = "form-check-label";
             label.htmlFor = `alimento-${alimento.nombre}`;
             label.innerText = alimento.nombre;
-            div.appendChild(checkbox);
-            div.appendChild(label);
-            alimentosCheckboxes.appendChild(div);
+
+            let inputCantidad = document.createElement("input");
+            inputCantidad.type = "number";
+            inputCantidad.min = "0";
+            inputCantidad.value = "0";
+            inputCantidad.className = "form-control cantidad-input";
+            inputCantidad.dataset.nombre = alimento.nombre;
+
+            inputCantidad.addEventListener('input', function() {
+                checkbox.checked = this.value > 0;
+            });
+
+            checkboxCell.appendChild(checkbox);
+            checkboxCell.appendChild(label);
+            cantidadCell.appendChild(inputCantidad);
+            row.appendChild(checkboxCell);
+            row.appendChild(cantidadCell);
+            alimentosCheckboxes.appendChild(row);
         });
     });
 
@@ -43,35 +62,86 @@ fetch('../json/jsonBebida.json')
     .then(bebidas => {
         let bebidasCheckboxes = document.getElementById("bebidasCheckboxes");
         bebidas.forEach(bebida => {
-            let div = document.createElement("div");
-            div.className = "form-check";
+            let row = document.createElement("tr");
+            let checkboxCell = document.createElement("td");
+            let cantidadCell = document.createElement("td");
+
             let checkbox = document.createElement("input");
             checkbox.className = "form-check-input";
             checkbox.type = "checkbox";
             checkbox.value = bebida.nombre;
             checkbox.id = `bebida-${bebida.nombre}`;
+            checkbox.dataset.nombre = bebida.nombre;
+
             let label = document.createElement("label");
             label.className = "form-check-label";
             label.htmlFor = `bebida-${bebida.nombre}`;
             label.innerText = bebida.nombre;
-            div.appendChild(checkbox);
-            div.appendChild(label);
-            bebidasCheckboxes.appendChild(div);
+
+            let inputCantidad = document.createElement("input");
+            inputCantidad.type = "number";
+            inputCantidad.min = "0";
+            inputCantidad.value = "0";
+            inputCantidad.className = "form-control cantidad-input";
+            inputCantidad.dataset.nombre = bebida.nombre;
+
+            inputCantidad.addEventListener('input', function() {
+                checkbox.checked = this.value > 0;
+            });
+
+            checkboxCell.appendChild(checkbox);
+            checkboxCell.appendChild(label);
+            cantidadCell.appendChild(inputCantidad);
+            row.appendChild(checkboxCell);
+            row.appendChild(cantidadCell);
+            bebidasCheckboxes.appendChild(row);
         });
     });
+
+function generarDescripcion() {
+    let descripcion = "";
+    let items = [];
+
+    if (alimentosSeleccionados.length > 0) {
+        items = items.concat(alimentosSeleccionados.map(item => `${item.cantidad} ${item.nombre}`));
+    }
+    if (bebidasSeleccionadas.length > 0) {
+        items = items.concat(bebidasSeleccionadas.map(item => `${item.cantidad} ${item.nombre}`));
+    }
+
+    if (items.length > 0) {
+        descripcion = items.slice(0, -1).join(", ") + (items.length > 1 ? " y " : "") + items.slice(-1);
+    }
+
+    document.getElementById("txtDescripcion").value = descripcion;
+}
 
 // Guardar alimentos seleccionados
 function guardarAlimentosSeleccionados() {
     const checkboxes = document.querySelectorAll("#alimentosCheckboxes .form-check-input:checked");
-    alimentosSeleccionados = Array.from(checkboxes).map(checkbox => checkbox.value);
+    alimentosSeleccionados = Array.from(checkboxes).map(checkbox => {
+        const cantidad = document.querySelector(`#alimentosCheckboxes .cantidad-input[data-nombre="${checkbox.dataset.nombre}"]`).value;
+        return { nombre: checkbox.value, cantidad: parseInt(cantidad, 10) };
+    }).filter(item => item.cantidad > 0);
+    actualizarSeleccionados('selectedAlimentos', alimentosSeleccionados);
     generarDescripcion();
 }
 
 // Guardar bebidas seleccionadas
 function guardarBebidasSeleccionadas() {
     const checkboxes = document.querySelectorAll("#bebidasCheckboxes .form-check-input:checked");
-    bebidasSeleccionadas = Array.from(checkboxes).map(checkbox => checkbox.value);
+    bebidasSeleccionadas = Array.from(checkboxes).map(checkbox => {
+        const cantidad = document.querySelector(`#bebidasCheckboxes .cantidad-input[data-nombre="${checkbox.dataset.nombre}"]`).value;
+        return { nombre: checkbox.value, cantidad: parseInt(cantidad, 10) };
+    }).filter(item => item.cantidad > 0);
+    actualizarSeleccionados('selectedBebidas', bebidasSeleccionadas);
     generarDescripcion();
+}
+
+// Actualiza la visualización de los elementos seleccionados
+function actualizarSeleccionados(id, seleccionados) {
+    const container = document.getElementById(id);
+    container.innerHTML = seleccionados.map(item => `${item.nombre} (${item.cantidad})`).join(', ');
 }
 
 // Convierte una imagen a base64
@@ -91,26 +161,6 @@ function convertToBase64(event) {
         document.getElementById("txtFoto").src = fotoBase64;
     };
     reader.readAsDataURL(file);
-}
-
-// Genera la descripción del combo basado en los productos seleccionados
-function generarDescripcion() {
-    let descripcion = "";
-
-    if (alimentosSeleccionados.length > 0) {
-        descripcion += alimentosSeleccionados.join(", ");
-    }
-    if (bebidasSeleccionadas.length > 0) {
-        descripcion += " y " + bebidasSeleccionadas.join(", ");
-    }
-
-    document.getElementById("txtDescripcion").value = descripcion;
-}
-
-// Despliega la foto seleccionada en el formulario
-function despliegaFoto(foto) {
-    foto = obtenerNombreFoto();
-    document.getElementById("txtFoto").src = foto;
 }
 
 // Selecciona un combo y llena el formulario
@@ -151,18 +201,16 @@ function limpiar() {
     bebidasSeleccionadas = [];
     document.querySelectorAll("#alimentosCheckboxes .form-check-input").forEach(checkbox => checkbox.checked = false);
     document.querySelectorAll("#bebidasCheckboxes .form-check-input").forEach(checkbox => checkbox.checked = false);
+    document.querySelectorAll("#alimentosCheckboxes .cantidad-input").forEach(input => input.value = "0");
+    document.querySelectorAll("#bebidasCheckboxes .cantidad-input").forEach(input => input.value = "0");
+    document.getElementById("selectedAlimentos").innerHTML = "";
+    document.getElementById("selectedBebidas").innerHTML = "";
 
     btnModificar.style.display = "none";
     btnEliminar.style.display = "none";
     btnCambiarEstatus.style.display = "none";
     btnLimpiar.style.display = "inline-block";
     btnAgregar.style.display = "inline-block";
-}
-
-// Obtiene el nombre del archivo de la ruta proporcionada
-function obtenerNombreFoto() {
-    let nombreFoto = document.getElementById("txtFotoRuta").value;
-    return nombreFoto.substring(nombreFoto.lastIndexOf("\\") + 1);
 }
 
 // Agrega un nuevo combo a la lista
