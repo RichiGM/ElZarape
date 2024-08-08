@@ -17,12 +17,11 @@ function cargarDatos() {
     if (usuariosGuardados) {
         obj = JSON.parse(usuariosGuardados);
     } else {
-        fetch('../json/jsonUsuario.json')
-            .then(response => response.json())
-            .then(jasondata => {
-                obj = jasondata;
-                guardarDatos();
-            });
+        // Si localStorage está vacío, inicializar con datos predeterminados
+        obj = [
+            { "username": "admin", "password": "Admin@1234", "estatus": "Activo" }
+        ];
+        guardarDatos();
     }
     actualizaTabla();
 }
