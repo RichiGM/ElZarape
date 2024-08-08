@@ -1,3 +1,4 @@
+/* global fetch */
 const btnModificar = document.getElementById("btnModificar");
 const btnEliminar = document.getElementById("btnEliminar");
 const btnLimpiar = document.getElementById("btnLimpiar");
@@ -12,20 +13,15 @@ let obj = []; // Arreglo que se llenará de objetos JSON
 let indexUsuarioSeleccionado;
 
 // Cargar datos y actualizar la tabla
-function cargarDatos() {
-    const usuariosGuardados = localStorage.getItem('usuarios');
-    if (usuariosGuardados) {
-        obj = JSON.parse(usuariosGuardados);
-    } else {
-        // Si localStorage está vacío, inicializar con datos predeterminados
-        obj = [
-            { "username": "admin", "password": "Admin@1234", "estatus": "Activo" }
-        ];
-        guardarDatos();
-    }
-    actualizaTabla();
-}
+fetch('../json/jsonUsuario.json')
+    .then(response => response.json())
+    .then(jasondata => {
+        obj = jasondata;
+        console.log(obj);
+        actualizaTabla();
+    });
 
+// Actualiza la tabla con los datos de obj
 function actualizaTabla() {
     let cuerpo = "";
     obj.forEach((elemento, index) => {
@@ -39,7 +35,7 @@ function actualizaTabla() {
         cuerpo += registro;
     });
     document.getElementById("tblUsuarios").innerHTML = cuerpo;
-    filtrarUsuarios();
+    filtrarUsuarios(); // Aplicar el filtro al cargar la tabla
 }
 
 // Selecciona un usuario y llena el formulario
@@ -51,7 +47,7 @@ function selectUsuario(index) {
 
     // Mostrar botones relevantes
     btnModificar.style.display = "inline-block";
-    btnEliminar.style.display = "none"; // Ocultar el botón de eliminar
+    btnEliminar.style.display = "none";
     btnCambiarEstatus.style.display = "inline-block";
     btnLimpiar.style.display = "inline-block";
     btnAgregar.style.display = "none";
@@ -91,7 +87,7 @@ function validarPassword(password) {
 
 // Genera una contraseña aleatoria que cumpla con las restricciones
 function generarPassword() {
-    const length = 8;
+    const length = 12;
     const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
     let password = "";
 
@@ -139,6 +135,7 @@ function agregarUsuario() {
         let newUser = { username, password, estatus: "Activo" };
         obj.push(newUser);
 
+        console.log(JSON.stringify(obj));
         guardarDatos();
         limpiar();
         actualizaTabla();
@@ -171,6 +168,7 @@ function modificarUsuario() {
             estatus: "Activo"
         };
 
+        console.log(obj[indexUsuarioSeleccionado].username, document.getElementById("txtUserName").value, username);
         guardarDatos();
         actualizaTabla();
         selectUsuario(indexUsuarioSeleccionado);
@@ -213,12 +211,37 @@ function filtrarUsuarios() {
     });
 }
 
-// Guarda los datos en localStorage y en el servidor simulado
+// Guarda los datos en el JSON
 function guardarDatos() {
     const jsonData = JSON.stringify(obj);
     localStorage.setItem('usuarios', jsonData); // Guardar en localStorage para persistencia
-    console.log('Datos guardados localmente');
+
+    // Simular una petición al servidor para guardar el JSON
+    fetch('../json/jsonUsuario.json', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: jsonData
+    }).then(response => {
+        if (!response.ok) {
+            throw new Error('Error al guardar los datos');
+        }
+        return response.json();
+    }).then(data => {
+        console.log('Datos guardados exitosamente', data);
+    }).catch(error => {
+        console.error('Error:', error);
+    });
 }
 
-// Cargar datos al iniciar la página
-document.addEventListener('DOMContentLoaded', cargarDatos);
+// Cargar datos desde localStorage si están disponibles
+function cargarDatos() {
+    const usuariosGuardados = localStorage.getItem('usuarios');
+    if (usuariosGuardados) {
+        obj = JSON.parse(usuariosGuardados);
+        actualizaTabla();
+    }
+}
+
+
