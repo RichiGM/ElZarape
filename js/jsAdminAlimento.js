@@ -13,6 +13,7 @@ btnCambiarEstatus.style.display = "none";
 
 let obj = []; // Arreglo que se llenará de objetos JSON
 let indexAlimentoSeleccionado;
+let fotoBase64 = ""; // Variable para almacenar la imagen en base64
 
 // Cargar datos y actualizar la tabla
 fetch('../json/jsonAlimento.json')
@@ -43,6 +44,16 @@ function actualizaTabla() {
     filtrarAlimentos(); // Aplicar el filtro al cargar la tabla
 }
 
+// Convierte una imagen a base64
+function convertToBase64(event) {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+    reader.onloadend = function () {
+        fotoBase64 = reader.result;
+        document.getElementById("txtFoto").src = fotoBase64;
+    };
+    reader.readAsDataURL(file);
+}
 
 // Despliega la foto seleccionada en el formulario
 function despliegaFoto(foto) {
@@ -107,7 +118,7 @@ function agregarAlimento() {
     let descripcion = document.getElementById("txtDescripcion").value;
     let precio = document.getElementById("txtPrecio").value;
     let categoria = document.getElementById("txtCategoria").value;
-    let foto = obtenerNombreFoto();
+    let foto = fotoBase64;
 
     if (nombre && descripcion && precio && categoria && foto) {
         let newProd = { nombre, descripcion, precio, categoria, foto, estatus: "Activo" };

@@ -1,12 +1,9 @@
-/* global fetch */
-// Inicializa los botones
 const btnModificar = document.getElementById("btnModificar");
 const btnEliminar = document.getElementById("btnEliminar");
 const btnLimpiar = document.getElementById("btnLimpiar");
 const btnAgregar = document.getElementById("btnAgregar");
 const btnCambiarEstatus = document.getElementById("btnCambiarEstatus");
 
-// Ocultar botones al cargar la página
 btnModificar.style.display = "none";
 btnEliminar.style.display = "none";
 btnCambiarEstatus.style.display = "none";
@@ -15,15 +12,21 @@ let obj = []; // Arreglo que se llenará de objetos JSON
 let indexUsuarioSeleccionado;
 
 // Cargar datos y actualizar la tabla
-fetch('../json/jsonUsuario.json')
-    .then(response => response.json())
-    .then(jasondata => {
-        obj = jasondata;
-        console.log(obj);
-        actualizaTabla();
-    });
+function cargarDatos() {
+    const usuariosGuardados = localStorage.getItem('usuarios');
+    if (usuariosGuardados) {
+        obj = JSON.parse(usuariosGuardados);
+    } else {
+        fetch('../json/jsonUsuario.json')
+            .then(response => response.json())
+            .then(jasondata => {
+                obj = jasondata;
+                guardarDatos();
+            });
+    }
+    actualizaTabla();
+}
 
-// Actualiza la tabla con los datos de obj
 function actualizaTabla() {
     let cuerpo = "";
     obj.forEach((elemento, index) => {
@@ -37,29 +40,30 @@ function actualizaTabla() {
         cuerpo += registro;
     });
     document.getElementById("tblUsuarios").innerHTML = cuerpo;
-    filtrarUsuarios(); // Aplicar el filtro al cargar la tabla
+    filtrarUsuarios();
 }
 
-
-// Selecciona un combo y llena el formulario
+// Selecciona un usuario y llena el formulario
 function selectUsuario(index) {
     document.getElementById("txtUserName").value = obj[index].username;
     document.getElementById("txtPassword").value = obj[index].password;
+    document.getElementById("txtConfirmPassword").value = obj[index].password;
     indexUsuarioSeleccionado = index;
 
     // Mostrar botones relevantes
     btnModificar.style.display = "inline-block";
-    btnEliminar.style.display = "none";
+    btnEliminar.style.display = "none"; // Ocultar el botón de eliminar
     btnCambiarEstatus.style.display = "inline-block";
     btnLimpiar.style.display = "inline-block";
     btnAgregar.style.display = "none";
 }
 
-// Cambia el estatus del combo seleccionado
+// Cambia el estatus del usuario seleccionado
 function cambiarEstatus() {
     if (indexUsuarioSeleccionado !== undefined) {
-        let combo = obj[indexUsuarioSeleccionado];
-        combo.estatus = (combo.estatus === "Activo") ? "Baja" : "Activo";
+        let usuario = obj[indexUsuarioSeleccionado];
+        usuario.estatus = (usuario.estatus === "Activo") ? "Baja" : "Activo";
+        guardarDatos();
         actualizaTabla();
         selectUsuario(indexUsuarioSeleccionado);
     }
@@ -70,6 +74,7 @@ function cambiarEstatus() {
 function limpiar() {
     document.getElementById("txtUserName").value = "";
     document.getElementById("txtPassword").value = "";
+    document.getElementById("txtConfirmPassword").value = "";
 
     // Ocultar botones específicos
     btnModificar.style.display = "none";
@@ -79,17 +84,63 @@ function limpiar() {
     btnAgregar.style.display = "inline-block";
 }
 
+// Valida la contraseña
+function validarPassword(password) {
+    const regex = /^(?=.*[A-Z])(?=.*[!@#$%^&*])(?=.{8,})/;
+    return regex.test(password);
+}
 
-// Agrega un nuevo combo a la lista
+// Genera una contraseña aleatoria que cumpla con las restricciones
+function generarPassword() {
+    const length = 8;
+    const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
+    let password = "";
+
+    while (!validarPassword(password)) {
+        password = "";
+        for (let i = 0; i < length; i++) {
+            password += charset.charAt(Math.floor(Math.random() * charset.length));
+        }
+    }
+
+    document.getElementById("txtPassword").value = password;
+    document.getElementById("txtConfirmPassword").value = password;
+}
+
+// Muestra u oculta la contraseña
+function togglePasswordVisibility() {
+    const passwordField = document.getElementById("txtPassword");
+    const confirmPasswordField = document.getElementById("txtConfirmPassword");
+    if (passwordField.type === "password") {
+        passwordField.type = "text";
+        confirmPasswordField.type = "text";
+    } else {
+        passwordField.type = "password";
+        confirmPasswordField.type = "password";
+    }
+}
+
+// Agrega un nuevo usuario a la lista
 function agregarUsuario() {
     let username = document.getElementById("txtUserName").value;
     let password = document.getElementById("txtPassword").value;
+    let confirmPassword = document.getElementById("txtConfirmPassword").value;
+
+    if (!validarPassword(password)) {
+        alert("La contraseña debe tener al menos 8 caracteres, 1 mayúscula y 1 carácter especial.");
+        return;
+    }
+
+    if (password !== confirmPassword) {
+        alert("Las contraseñas no coinciden.");
+        return;
+    }
 
     if (username && password) {
-        let newProd = { username, password, estatus: "Activo" };
-        obj.push(newProd);
+        let newUser = { username, password, estatus: "Activo" };
+        obj.push(newUser);
 
-        console.log(JSON.stringify(obj));
+        guardarDatos();
         limpiar();
         actualizaTabla();
     } else {
@@ -97,11 +148,22 @@ function agregarUsuario() {
     }
 }
 
-// Modifica un combo existente en la lista
+// Modifica un usuario existente en la lista
 function modificarUsuario() {
     if (indexUsuarioSeleccionado !== undefined) {
         let username = document.getElementById("txtUserName").value;
         let password = document.getElementById("txtPassword").value;
+        let confirmPassword = document.getElementById("txtConfirmPassword").value;
+
+        if (!validarPassword(password)) {
+            alert("La contraseña debe tener al menos 8 caracteres, 1 mayúscula y 1 carácter especial.");
+            return;
+        }
+
+        if (password !== confirmPassword) {
+            alert("Las contraseñas no coinciden.");
+            return;
+        }
 
         obj[indexUsuarioSeleccionado] = {
             ...obj[indexUsuarioSeleccionado],
@@ -110,16 +172,17 @@ function modificarUsuario() {
             estatus: "Activo"
         };
 
-        console.log(obj[indexUsuarioSeleccionado].username, document.getElementById("txtUserName").value, username);
+        guardarDatos();
         actualizaTabla();
         selectUsuario(indexUsuarioSeleccionado);
     }
 }
 
-// Elimina el combo seleccionado de la lista
+// Elimina el usuario seleccionado de la lista
 function eliminarUsuario() {
     if (indexUsuarioSeleccionado !== undefined) {
         obj = obj.filter((_, index) => index !== indexUsuarioSeleccionado);
+        guardarDatos();
         limpiar();
         actualizaTabla();
     }
@@ -128,12 +191,12 @@ function eliminarUsuario() {
 // Normaliza el texto para la búsqueda (minúsculas y sin acentos)
 function normalizarTexto(texto) {
     return texto
-        .toLowerCase() // Convertir a minúsculas
-        .normalize("NFD") // Descomponer caracteres acentuados
-        .replace(/[\u0300-\u036f]/g, ""); // Eliminar marcas de acento
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
 }
 
-// Filtra los combos en la tabla según el texto de búsqueda
+// Filtra los usuarios en la tabla según el texto de búsqueda
 function filtrarUsuarios() {
     const textoBusqueda = normalizarTexto(document.getElementById("buscarUsuario").value);
     const filas = document.querySelectorAll("#tblUsuarios tr");
@@ -150,3 +213,13 @@ function filtrarUsuarios() {
         }
     });
 }
+
+// Guarda los datos en localStorage y en el servidor simulado
+function guardarDatos() {
+    const jsonData = JSON.stringify(obj);
+    localStorage.setItem('usuarios', jsonData); // Guardar en localStorage para persistencia
+    console.log('Datos guardados localmente');
+}
+
+// Cargar datos al iniciar la página
+document.addEventListener('DOMContentLoaded', cargarDatos);
