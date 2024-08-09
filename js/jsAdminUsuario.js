@@ -81,7 +81,7 @@ function limpiar() {
 
 // Valida la contraseña
 function validarPassword(password) {
-    const regex = /^(?=.*[A-Z])(?=.*[!@#$%^&*])(?=.{8,})/;
+    const regex = /^(?=.*[A-Z])(?=.*[!@#$%^&*])(?=.{12,})/;
     return regex.test(password);
 }
 
@@ -122,7 +122,7 @@ function agregarUsuario() {
     let confirmPassword = document.getElementById("txtConfirmPassword").value;
 
     if (!validarPassword(password)) {
-        alert("La contraseña debe tener al menos 8 caracteres, 1 mayúscula y 1 carácter especial.");
+        alert("La contraseña debe tener al menos 12 caracteres, 1 mayúscula y 1 carácter especial.");
         return;
     }
 
@@ -152,7 +152,7 @@ function modificarUsuario() {
         let confirmPassword = document.getElementById("txtConfirmPassword").value;
 
         if (!validarPassword(password)) {
-            alert("La contraseña debe tener al menos 8 caracteres, 1 mayúscula y 1 carácter especial.");
+            alert("La contraseña debe tener al menos 12 caracteres, 1 mayúscula y 1 carácter especial.");
             return;
         }
 
