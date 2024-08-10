@@ -20,7 +20,7 @@ body {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     max-width: 300px;
     width: 100%;
-    margin-left: 350px; /* Margen izquierdo para mantener la alineación en PC */
+    margin-left: 250px; /* Margen izquierdo para mantener la alineación en PC */
 }
 
 .login-logo {
