@@ -15,12 +15,12 @@ body {
 
 .login-container {
     background-color: rgba(44, 44, 44, 0.7);
-    padding: 20px;
+    padding: 15px;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    max-width: 300px;
+    max-width: 250px;
     width: 100%;
-    margin-left: 250px; /* Margen izquierdo para mantener la alineación en PC */
+    margin-left: 200px; /* Margen izquierdo para mantener la alineación en PC */
 }
 
 .login-logo {
